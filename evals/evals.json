@@ -1,0 +1,41 @@
+{
+  "skill_name": "melodata-api",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write a JavaScript function that takes a list of ISRCs and returns only the tracks with BPM between 120 and 140 using the MeloData API",
+      "expected_output": "A function that calls batch/features, filters by bpm range, handles auth and errors",
+      "files": [],
+      "expectations": [
+        "Uses POST /v1/tracks/batch/features endpoint",
+        "Includes Authorization header with Bearer token",
+        "Filters results by bpm >= 120 and bpm <= 140",
+        "Handles the case where features may be null (not_found tracks)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need a Python script that gets audio features for a song, and if the API returns 202, retries until it gets the data",
+      "expected_output": "Python function with retry logic for 202 status, using Retry-After header",
+      "files": [],
+      "expectations": [
+        "Checks for 202 status code",
+        "Reads Retry-After header for wait time",
+        "Implements retry loop or recursive call",
+        "Uses the correct MeloData API URL format with ISRC"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Build a music recommendation feature that finds tracks similar to 3 seed songs, preferring high-energy danceable tracks",
+      "expected_output": "Code using the recommendations endpoint with seed ISRCs and target_energy/target_danceability params",
+      "files": [],
+      "expectations": [
+        "Uses GET /v1/recommendations endpoint",
+        "Passes multiple seed parameters",
+        "Sets target_energy and target_danceability query params",
+        "Handles the response format with match_score"
+      ]
+    }
+  ]
+}
