@@ -11,18 +11,20 @@ A skill file that gives AI coding agents (Claude Code, Cursor, Windsurf, etc.) f
 ### Claude Code
 
 ```bash
-# Add to your project
-cp -r melodata-api/ your-project/.claude/skills/
+# Clone into your project's skills directory
+git clone https://github.com/voltenworks/melodata-agent-skill.git your-project/.claude/skills/melodata-api
 ```
 
-Or reference it in your CLAUDE.md:
-```
-See .claude/skills/melodata-api/SKILL.md for MeloData API reference.
+Or copy manually:
+```bash
+mkdir -p .claude/skills/melodata-api
+curl -sL https://github.com/voltenworks/melodata-agent-skill/archive/main.tar.gz \
+  | tar xz --strip-components=1 -C .claude/skills/melodata-api
 ```
 
 ### Cursor / Windsurf
 
-Copy `SKILL.md` into your project's AI rules or context directory.
+Copy `SKILL.md` into your project's `.cursorrules` or context directory.
 
 ## What's Included
 
