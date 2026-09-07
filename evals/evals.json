@@ -19,10 +19,10 @@
       "expected_output": "Python function with retry logic for 202 status, using Retry-After header",
       "files": [],
       "expectations": [
-        "Checks for 202 status code",
-        "Reads Retry-After header for wait time",
-        "Implements retry loop or recursive call",
-        "Uses the correct MeloData API URL format with ISRC"
+        "Checks for 202 before treating the response as complete",
+        "Respects Retry-After with bounded polling and per-request timeouts",
+        "Does not recurse indefinitely or retry monthly quota exhaustion immediately",
+        "Handles a terminal 200 unavailable response without dereferencing absent features"
       ]
     },
     {
@@ -35,6 +35,66 @@
         "Passes multiple seed parameters",
         "Sets target_energy and target_danceability query params",
         "Handles the response format with match_score"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I have 200 titles and artists and want audio features. I am on the Free plan. Build an importer that can resume after a network failure.",
+      "expected_output": "Explains 25 monthly rows, 10 per job and one active job; does not promise to submit 200 on Free. Uses saved jobs and persisted keys.",
+      "files": [],
+      "expectations": [
+        "Checks bulk allowance before submission; 25 Free rows/month, 10/job, one active job",
+        "Uses POST /tracks/jobs and persists submission key plus job ID",
+        "Reuses same key and identical ordered inputs after an uncertain request",
+        "Reads track.result.features and preserves order, duplicate rows and unsuccessful outcomes"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "My bulk job finished with completed, needs_review and failed rows. Can I resubmit the list to try again?",
+      "expected_output": "Preserves completed work, uses failed-item retry, and requires review for weak matches.",
+      "files": [],
+      "expectations": [
+        "Uses POST /tracks/jobs/{id}/retry with a persisted retry-cycle key",
+        "Retries only failed items, maximum two cycles, without extra allowance",
+        "Does not silently analyze needs_review matches",
+        "Explains seven-day expiry is not extended by retries"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Resolve this song title and artist, then analyze it. What do I do if resolution returns 503 or a medium-confidence radio edit?",
+      "expected_output": "Distinguishes temporary dependency failures from no match and asks for recording review.",
+      "files": [],
+      "expectations": [
+        "Uses encoded GET /tracks/resolve title and artist parameters",
+        "Preserves recording qualifiers",
+        "503 is transient and uses bounded Retry-After handling, while 404 means no acceptable match",
+        "Does not automatically analyze a medium-confidence recording variant"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Can I depend on liveness and valence being available on every track? What does the loudness number mean?",
+      "expected_output": "Explains nullable fields, archive/live differences and preview measurement limits.",
+      "files": [],
+      "expectations": [
+        "Liveness is currently null across sources",
+        "Live valence, acousticness and instrumentalness are null",
+        "Speechiness can be present for live analysis",
+        "Loudness is preview-based, not guaranteed full-master loudness; no Spotify-identical promise"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "How much quota do errors, a successful 50-track batch, pre-analysis, and a replayed bulk submission consume?",
+      "expected_output": "Separates implemented direct-request billing from bulk row allowance and flags older documentation discrepancies.",
+      "files": [],
+      "expectations": [
+        "202, 4xx and 5xx consume no lookup quota",
+        "Successful batch/features currently counts one request, not 50 tracks",
+        "Successful batch/analyze currently consumes a lookup; not described as free",
+        "Accepted bulk input rows count once each, while same-key replays, reads and failed-item retries add no units"
       ]
     }
   ]
