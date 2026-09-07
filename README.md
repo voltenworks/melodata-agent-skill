@@ -1,65 +1,44 @@
 # MeloData Agent Skill
 
-Agent skill for the [MeloData API](https://melodata.voltenworks.com) — audio features and metadata for any music track by ISRC.
+API integration guidance for [MeloData](https://melodata.voltenworks.com): music metadata, audio features, title-and-artist resolution, and saved bulk jobs.
 
-## What This Is
+Updated for API v1.4.0, September 7, 2026. The skill explains nullable features and recording-match confidence, so generated integrations can handle incomplete results.
 
-A skill file that gives AI coding agents (Claude Code, Cursor, Windsurf, etc.) full context about the MeloData API: endpoints, authentication, 202 retry handling, billing rules, rate limits, and integration patterns.
+## Install or update
 
-## Quick Install
-
-### Claude Code
+Clone into a directory your coding agent loads as a skill:
 
 ```bash
-# Clone into your project's skills directory
 git clone https://github.com/voltenworks/melodata-agent-skill.git your-project/.claude/skills/melodata-api
 ```
 
-Or copy manually:
+For an existing Git installation, review the incoming changes and update with:
+
 ```bash
-mkdir -p .claude/skills/melodata-api
-curl -sL https://github.com/voltenworks/melodata-agent-skill/archive/main.tar.gz \
-  | tar xz --strip-components=1 -C .claude/skills/melodata-api
+git -C your-project/.claude/skills/melodata-api pull --ff-only
 ```
 
-### Cursor / Windsurf
+If you copied the files manually, replace `SKILL.md` and the entire `references/` directory together. The skill links to those references; copying only the main file leaves examples unavailable. Load the directory through your agent's supported skill/context mechanism.
 
-Copy `SKILL.md` into your project's `.cursorrules` or context directory.
+## Included
 
-## What's Included
+- [SKILL.md](SKILL.md): endpoints, authentication, limits, billing, bulk states and retention.
+- [Integration patterns](references/integration-patterns.md): bounded JavaScript/Python polling and resumable bulk submission.
+- [Feature definitions](references/feature-definitions.md): units, nullable fields, preview and archive limitations.
+- [Evaluation cases](evals/evals.json): prompts and expected behaviors for checking an agent using the skill. These are evaluation specifications, not recorded passing test results.
 
-```
-SKILL.md                              # Core API reference (all endpoints, auth, billing)
-references/
-  integration-patterns.md             # Playlist analysis, recommendations, error handling, Python client
-  feature-definitions.md              # What each audio feature means, ranges, units
-evals/
-  evals.json                          # Test cases for skill validation
-```
+## Changes in this update
 
-## API Overview
+- Resolve a title and artist to an ISRC, with recording-confidence checks.
+- Submit saved bulk jobs, resume polling, preserve ordered results and retry failed items.
+- Explain the separate included bulk allowances on Free, Dev, Pro and Scale.
+- Replace unbounded recursion and fixed-delay completion assumptions with bounded polling.
+- Correct error billing, batch billing descriptions and feature availability.
 
-MeloData returns 12 audio features for any track by ISRC:
+No API keys are included. Read `MELODATA_API_KEY` from your environment and create a key in the [developer portal](https://melodata.voltenworks.com/sign-in) under API Keys.
 
-| Feature | Range | Description |
-|---------|-------|-------------|
-| bpm | 60-200 | Tempo in beats per minute |
-| key | text | Musical key (e.g. "Bb", "C#m") |
-| energy | 0-1 | Perceptual intensity |
-| danceability | 0-1 | Rhythm suitability for dancing |
-| valence | 0-1 | Musical positivity/happiness |
-| acousticness | 0-1 | Acoustic vs electronic |
-| loudness | dB | Overall loudness |
-| instrumentalness | 0-1 | Vocal presence |
-| speechiness | 0-1 | Spoken word presence |
-| liveness | 0-1 | Live audience probability |
+## Sources and maintenance
 
-**Base URL:** `https://melodata.voltenworks.com/api/v1`
+- [Live API documentation](https://melodata.voltenworks.com/docs)
 
-**Get a free API key:** https://melodata.voltenworks.com/dashboard/keys
-
-## Links
-
-- [API Documentation](https://melodata.voltenworks.com/docs)
-- [Dashboard](https://melodata.voltenworks.com/dashboard)
-- [Pricing](https://melodata.voltenworks.com/#pricing)
+When an API release changes endpoints, billing, limits, response shapes or feature availability, update the skill, affected references and evaluation cases together. Check billing descriptions against actual implementation when older documentation disagrees. Record the API version and verification date in `SKILL.md`.
